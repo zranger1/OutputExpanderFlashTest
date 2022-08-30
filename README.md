@@ -69,7 +69,7 @@ see the ST-Link configuration window. Set the configuration as follows:
 - Access port to 0
 - Reset Mode to Hardware reset
 - Speed to Reliable
-- Shard to Enabled
+- Shared to Enabled
 - Uncheck Debug in Low Power Mode
 
 - Now click the "Refresh" icon next to the Serial Number field. Your Programmer's serial number
