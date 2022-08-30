@@ -5,8 +5,16 @@ The new firmware works only with WS2812-protocol RGBW LEDs and allows the user t
 RGBW operation and RGB-W operation, which disables the W channel and uses RGB values from Pixelblaze to
 produce white.
 
-It's marginally useful -- mostly if you don't like the particular white your RGBW LEDs produuce and want to 
-use the mixed RGB white instead, but it does provide a simple example of how to build and flash Output Expander firmware.
+It's only marginally useful -- mostly if you don't like the particular white your RGBW LEDs produuce and want to 
+use the mixed RGB white instead. But it does provide a simple example of how to build and flash Output Expander firmware.
+
+If you decide to use try this firmware, to choose your output mode:
+
+- for RGB-W, choose a 3 element RGB option in the proper color order from the Pixelblaze's expander board setup.
+- for RGBW, choose the 4-element RGBW option you would normally use from the Pixelblaze's expander board setup.
+	
+Note that 3-element RGB WS2812s will not work properly with this firmware. It only supports RGBW LEDs. Non-WS2812 protocol LEDs, like
+the APA-102, will work normally.
 
 ### What you'll need
 - STM32CubeIDE from https://www.st.com/en/development-tools/stm32cubeide.html
@@ -41,11 +49,9 @@ Try building your new project in STM32CubeIDE - you should now be able to succes
 - Open it in STM32CubeIDE
 - Select the .ioc file and build the project
 
-
 ### Programming the Output Expander
 Once you've successfully built the firmware, it is time to download it
 to the Output Expander's flash memory!
-
 
 #### Connecting STM Programmer to Output Expander
 You'll be connecting the 5 SWD(Serial Wire Debug)pads on the bottom of the output expander to the
