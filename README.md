@@ -1,30 +1,24 @@
-# OutputExpanderFlash
+## OutputExpanderFlash "ChangeTimingForV2" Branch
 ### What it does
-This is an STM32CubeIDE project that builds alternate firmware for the Pixelblaze Output Expander board.
-The new firmware works only with WS2812-protocol RGBW LEDs and allows the user to choose between normal
-RGBW operation and RGB-W operation, which disables the W channel and uses RGB values from Pixelblaze to
-produce white.
+This is an STM32CubeIDE project that builds alternate firmware for the v2 Pixelblaze Output Expander board.
+Note that this version of the firmware WILL ONLY WORK WITH V2 boards. If you have a v1 or v3, you can use
+the same method to adjust timing, but you'll have to modify the code for the appropriate branch yourself. 
 
-It's only marginally useful -- mostly if you don't like the particular white your RGBW LEDs produuce and want to 
-use the mixed RGB white instead. But it does provide a simple example of how to build and flash Output Expander firmware.
-
-If you decide to use try this firmware, to choose your output mode:
-
-- for RGB-W, choose a 3 element RGB option in the proper color order from the Pixelblaze's expander board setup.
-- for RGBW, choose the 4-element RGBW option you would normally use from the Pixelblaze's expander board setup.
-	
-Note that 3-element RGB WS2812s will not work properly with this firmware. It only supports RGBW LEDs. Non-WS2812 protocol LEDs, like
-the APA-102, will work normally.
+This branch contains code that allows you to adjust the timing of the WS2812B data signal to work with LEDs
+that may not be compatible with the default timing.  Instructions on how to calculate values for a particular
+timing are included in the code comments in `Core/Src/main.c`.  The "working" code is in 'Core/Src/app.c'.
+The values shown in the code are configured to replicate the 1.3us/2.6us timing that was available on the v2
+Pixelblaze. 
 
 ### What you'll need
 - STM32CubeIDE from https://www.st.com/en/development-tools/stm32cubeide.html
 - STM32CubeProgrammer from https://www.st.com/en/development-tools/stm32cubeprog.html
 - An ST-Link V2 Programmer or emulator.  I used this one:  https://www.amazon.com/HiLetgo-Emulator-Downloader-Programmer-STM32F103C8T6/dp/B07SQV6VLZ
-- Quite a lot of dupont wires or other small, easy-to-connect wiring.  
-- A soldering iron & lead-free solder
+- Either a compatible programming jig or some dupont wires and a steady hand with a soldering iron.
 - A Pixelblaze
 - A Pixelblaze Output Expander board, marked v2 (2019) or newer.
-- a few RGBW LEDs to test
+- a few LEDs to test
+- A logic analyzer or oscilloscope to verify that the timing is correct is very, very helpful.
 
 ### WARNING:  
 **Modifying firmware can break your device and potentially other connected devices.** If you attempt this,
@@ -45,7 +39,7 @@ drag each directory on over to the new location.
 Try building your new project in STM32CubeIDE - you should now be able to successfully compile.
 
 #### From OutputExpanderFlashTest
-- Download or clone this project - https://github.com/zranger1/OutputExpanderFlashTest
+- Download or clone this project. Be sure to download the "ChangeTimingForV2" branch.
 - Open it in STM32CubeIDE
 - Select the .ioc file and build the project
 
@@ -57,7 +51,7 @@ to the Output Expander's flash memory!
 You'll be connecting the 5 SWD(Serial Wire Debug)pads on the bottom of the output expander to the
 corresponding 5 line on your STM programmer. The required lines are 3.3v, GND, Data, Clock and Reset. 
 If you're going to do this frequently, you might want to order some pogo pins, and 3D print or otherwise 
-craft a programming jig for yourself. I just soldered short wires to the pads.
+craft a programming jig for yourself. 
 
 #### Programming the Output Expander
 With your STM Programmer wired to the Output Expander and plugged into a

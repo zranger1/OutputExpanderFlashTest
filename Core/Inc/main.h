@@ -86,30 +86,32 @@ void Error_Handler(void);
                                                                  0 bit  for subpriority */
 #endif
 /* USER CODE BEGIN Private defines */
-// parameters for LED timing
+// parameters for LED timing. Uncomment the line below to use the v2
+// output expander's original timing.
+// #define _USE_ORIGINAL_TIMING
 
-// original values ************************************************
-// Timer frequency = System clock / (Prescaler + 1) / (Autoreload + 1)
-// so 79 = (64Mhz / 800khz) - 1
+//*****************************************************************
+// original output expander v2 timing values
+// Timer frequency = System clock / (Autoreload + 1)
+// 64Mhz/80 = 800khz
 #ifdef _USE_ORIGINAL_TIMING
 #define LED_TIMER_FREQUENCY 800000
-#define TIM1_CYCLE_COUNT 79
-#define TIM1_COMPARE_CH1 1
-#define TIM1_COMPARE_CH3 16
-#define TIM1_COMPARE_CH4 56
+#define TIM1_CYCLE_COUNT 79   // overall cycle time is 1.24us
+#define TIM1_COMPARE_CH1 1    // start
+#define TIM1_COMPARE_CH3 16   // 250ns  (1/64Mhz) * 16
+#define TIM1_COMPARE_CH4 56   // 875ns  (1/64Mhz) * 56
 #define TIM2_COMPARE_CH2 64
 
 #else
-// new Canadian garage-friendly values ************************************************
-// Timer frequency = System clock / (Prescaler + 1) / (Autoreload + 1)
-// so 424 ticks  = 150943hz
+// new timing: matches the 1.3us/2.6us timing available on the Pixelblaze v2
+// Timer frequency = System clock / (Autoreload + 1)
+// 64Mhz/424 = 150943hz
 #define LED_TIMER_FREQUENCY 150943
-#define TIM1_CYCLE_COUNT 423
-                               // how far through the cycle this event should be
-#define TIM1_COMPARE_CH1 1     //
-#define TIM1_COMPARE_CH3 85    // 0.2
-#define TIM1_COMPARE_CH4 171   // (original was 0.7, adjusted to match pb2 timing)
-#define TIM2_COMPARE_CH2 339   // 0.8
+#define TIM1_CYCLE_COUNT 423   // overall cycle time is 6.625us
+#define TIM1_COMPARE_CH1 1     // start
+#define TIM1_COMPARE_CH3 85    // 1.333us
+#define TIM1_COMPARE_CH4 171   // 2.67us
+#define TIM2_COMPARE_CH2 339
 
 #endif // __USE_ORIGINAL_TIMING
 
