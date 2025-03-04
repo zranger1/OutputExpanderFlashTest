@@ -177,26 +177,12 @@ static inline void startDrawingChannles() {
 		}
 	}
 
-//	frequency = 2000000;
-//
-//	//ws2812 clock overrides anything else
-//	if (ws2812StartBits || frequency <= 0) {
-		frequency = 800000;
-		TIM1->ARR = TIM2->ARR = 79; //64mhz / 800khz = 80
-		TIM1->CCR1 = 1; //ws2812 start bits
-		TIM1->CCR3 = 16; //triggers data + zeros clocks
-		TIM1->CCR4 = 56; //ws2812 stop bits
-		TIM2->CCR2 = 57; //sets clock high to latch
-//	} else {
-//		int reload = (SystemCoreClock / frequency) - 1;
-//		if (reload < 4)
-//			reload = 4;
-//		TIM1->ARR = TIM2->ARR = reload;
-//		TIM1->CCR1 = 2; //does this fire?
-//		TIM1->CCR3 = 1; //triggers data + zeros clocks
-//		TIM1->CCR4 = 3; //does this fire?
-//		TIM2->CCR2 = TIM1->ARR>>1; //sets clock high to latch
-//	}
+	frequency = LED_TIMER_FREQUENCY;
+	TIM1->ARR = TIM2->ARR = TIM1_CYCLE_COUNT;
+	TIM1->CCR1 = TIM1_COMPARE_CH1;     //ws2812 start bits
+	TIM1->CCR3 = TIM1_COMPARE_CH3;     //triggers data + zeros clocks
+	TIM1->CCR4 = TIM1_COMPARE_CH4;     //ws2812 stop bits
+	TIM2->CCR2 = TIM1_COMPARE_CH4 + 1; //sets clock high to latch
 
 	int maxBits = maxBytes *8;
 
@@ -324,20 +310,10 @@ static inline void handleIncomming() {
 		case SET_CHANNEL_WS2812: {
 			//read in the header
 			PBWS2812Channel ch;
-			int isMinusW = 0;
 			uartRead(&ch, sizeof(PBWS2812Channel));
 
 			if (ch.numElements < 3 || ch.numElements > 4)
 				return;
-
-			// HACK - use all 3 byte formats as 4 byte formats with 0 white channel values
-			// if the incoming data is a "real" 4 byte format, leave it alone.
-			if (ch.numElements == 3) {
-				ch.numElements = 4;
-				ch.ow = 3;  // either this or 0!
-				isMinusW = 1;
-			}
-
 			if (ch.pixels * ch.numElements > BYTES_PER_CHANNEL)
 				return;
 
@@ -364,23 +340,9 @@ static inline void handleIncomming() {
 				elements[or] = uartGetc();
 				elements[og] = uartGetc();
 				elements[ob] = uartGetc();
-
-				// HACK - numElements will always be 4, so the original test below isn't
-				// needed. What we care about is this:  real 4 or fake 4?
-				//
-				//if (ch.numElements == 4) {
-				//	  elements[ow] = uartGetc();
-				//}
-
-				// HACK So, if it's a minus W setup, we fill the white channel with zero
-				// otherwise it's real RGBW data, so read the incoming value
-				if (isMinusW) {
-					elements[ow] = 0;
-				}
-				else {
+				if (ch.numElements == 4) {
 					elements[ow] = uartGetc();
 				}
-
 				//this will ignore channel > 7
 				bitConverter(dst, channel, elements, ch.numElements);
 				dst += stride;
@@ -393,7 +355,6 @@ static inline void handleIncomming() {
 			ledOff();
 			if (channel < 8) {
 				int blocksToZero;
-
 				if (crcExpected == crcRead) {
 					if (channels[channel].type == SET_CHANNEL_WS2812
 							&& (ch.pixels * ch.numElements >=

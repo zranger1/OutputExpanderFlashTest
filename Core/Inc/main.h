@@ -86,6 +86,32 @@ void Error_Handler(void);
                                                                  0 bit  for subpriority */
 #endif
 /* USER CODE BEGIN Private defines */
+// parameters for LED timing
+
+// original values ************************************************
+// Timer frequency = System clock / (Prescaler + 1) / (Autoreload + 1)
+// so 79 = (64Mhz / 800khz) - 1
+#ifdef _USE_ORIGINAL_TIMING
+#define LED_TIMER_FREQUENCY 800000
+#define TIM1_CYCLE_COUNT 79
+#define TIM1_COMPARE_CH1 1
+#define TIM1_COMPARE_CH3 16
+#define TIM1_COMPARE_CH4 56
+#define TIM2_COMPARE_CH2 64
+
+#else
+// new Canadian garage-friendly values ************************************************
+// Timer frequency = System clock / (Prescaler + 1) / (Autoreload + 1)
+// so 424 ticks  = 150943hz
+#define LED_TIMER_FREQUENCY 150943
+#define TIM1_CYCLE_COUNT 423
+                               // how far through the cycle this event should be
+#define TIM1_COMPARE_CH1 1     //
+#define TIM1_COMPARE_CH3 85    // 0.2
+#define TIM1_COMPARE_CH4 171   // (original was 0.7, adjusted to match pb2 timing)
+#define TIM2_COMPARE_CH2 339   // 0.8
+
+#endif // __USE_ORIGINAL_TIMING
 
 /* USER CODE END Private defines */
 

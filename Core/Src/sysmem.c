@@ -53,6 +53,7 @@
 /* Variables */
 extern int errno;
 register char * stack_ptr asm("sp");
+typedef void * caddr_t;
 
 /* Functions */
 
